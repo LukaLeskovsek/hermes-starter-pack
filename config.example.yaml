@@ -1,0 +1,26 @@
+# Hermes config — safe workshop defaults. Copy relevant bits into ~/.hermes/config.yaml.
+# These encode the two rules: read-first / draft-only, and one job at a time.
+
+# Approval: start conservative. "session" = ask each session; never "always" on day one.
+approval:
+  dangerous_commands: session      # session | always(off) — keep at session
+  external_writes: require         # sending email, posting, writing to a CRM => always ask
+
+# Keep the agent supervised until it has earned trust with logged, safe runs.
+autonomy: supervised               # supervised | approved-write | autonomous(earned, not default)
+
+# Spend guardrail (mirror MONTHLY_SPEND_CAP_USD in .env if your provider supports it).
+budget:
+  monthly_cap_usd: 25
+
+# Delegation defaults are conservative — one level, few children. Raise later if needed.
+delegation:
+  max_concurrent_children: 3
+  max_spawn_depth: 1
+
+# --- Notes for AGENTS.md (paste these standing rules into ~/.hermes/AGENTS.md) ---
+# - Read-first, draft-only. Never send/write to an external system without my approval.
+# - Ask before anything irreversible. When unsure, stop and ask.
+# - No secrets in the company brain (gbrain). Inbox content never gets imported.
+# - Keep a log of what you did. If you refuse something, tell me why.
+# - One job at a time. Prove it works (dry-run) before scheduling it.

@@ -1,0 +1,7 @@
+# Secrets — never commit real values
+.env
+*.local
+# OS / editor cruft
+.DS_Store
+~$*
+*.swp
