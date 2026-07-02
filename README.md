@@ -19,6 +19,16 @@ Your guided path to a working personal operator agent. **You don't need the term
 
 That's it. Everything below is for reference — Claude reads it for you.
 
+### Day 5 — add your company brain (gbrain)
+
+Give both Claude and Hermes a memory of *your* business — a private, local second brain. Open Claude Code in this folder and say:
+
+> 🇸🇮 **"Preberi SETUP-GBRAIN.md in mi namesti gbrain — lokalno, brez Postgresa, z OpenAI embeddings. Poveži ga s Claude in s Hermesom, uvozi moje dokumente in nastavi samodejno vzdrževanje. Vodi me in se pred vsakim korakom ustavi za mojo odobritev."**
+>
+> 🇬🇧 **"Read SETUP-GBRAIN.md and install gbrain for me — local, no Postgres, OpenAI embeddings. Connect it to Claude and to Hermes, import my documents, and set up automatic maintenance. Guide me and pause for my approval at each step."**
+
+You'll need an **OpenAI API key** (Claude walks you through getting one). Everything stays on your laptop; it keeps itself up to date.
+
 > **Where does Hermes keep my files?** macOS / WSL: `~/.hermes/`. Native Windows: `%LOCALAPPDATA%\hermes\`. Claude uses the right one automatically; you rarely need to touch it.
 
 ## What you'll end up with
@@ -35,7 +45,8 @@ That's it. Everything below is for reference — Claude reads it for you.
 
 | File / folder | What it is |
 |---|---|
-| `STARTER.md` | The recipe Claude executes. Your fresh install, step by step. |
+| `STARTER.md` | The recipe Claude executes. Your fresh Hermes install, step by step. |
+| `SETUP-GBRAIN.md` | The recipe Claude executes to install your **company brain** (gbrain) locally and wire it into both Claude and Hermes. |
 | `HANDOFF.template.md` | The written plan Claude leaves for Hermes — the checklist Hermes reads to know what to build next and where to resume. |
 | `env.example` | Template for your keys and settings (Claude fills a copy in). |
 | `config.example.yaml` | Safe defaults — approval tiers, read-first. |
