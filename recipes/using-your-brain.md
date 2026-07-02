@@ -5,6 +5,8 @@ Your brain is set up and wired into both Claude and Hermes. Here's how to actual
 ## The one thing to understand
 Before the brain, the AI answered from the internet and guesswork. Now, when you ask about *your* business, it looks inside *your* documents first and tells you where the answer came from. Same chat, better answers.
 
+> Want the "how does this actually work" version (embeddings, the graph, what happens when you ask)? Read **`how-the-brain-works.md`** — a plain-language explainer, no jargon.
+
 ## Just ask — in plain language
 In Claude or Hermes (Desktop, terminal, or Telegram), ask naturally:
 - *"What do our documents say about our refund policy?"*
