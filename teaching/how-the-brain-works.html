@@ -69,8 +69,11 @@ canvas{display:block;width:100%;height:100%}
 .ex button:hover{border-color:var(--orange)}
 .answer{background:#fff;border:1px solid var(--line);border-left:4px solid var(--orange);
   border-radius:8px;padding:13px 15px;font-size:14px;line-height:1.55;margin-top:12px}
-.answer .src{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--orange-soft);
-  border:1px solid #f3d3a6;color:#a85700;border-radius:5px;padding:1px 7px;margin:3px 4px 0 0}
+.src{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--orange-soft);
+  border:1px solid #f3d3a6;color:#a85700;border-radius:5px;padding:1px 7px;margin:3px 4px 0 0;
+  white-space:nowrap;vertical-align:middle}
+.mrow{margin:7px 0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mrow .lbl{font-size:12px;color:var(--muted2);min-width:74px;flex-shrink:0}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 .legend .l{display:flex;align-items:center;gap:6px;font-size:12px;color:#444}
 .legend .dot{width:11px;height:11px;border-radius:50%}
@@ -443,8 +446,8 @@ function renderQueryStep(){
       body:`Each search returns a ranked list; the brain fuses them into one, so a note that scores well on <strong>both</strong> rises to the top. <em>(The formal name is “reciprocal rank fusion.”)</em>`,
       extra(){ const near=nearestToQuery(DEPTH_N[state.depth]); const kw=queryKeywordHits();
         const both=near.filter(i=>kw.has(i));
-        const row=(label,ids)=>`<div style="margin:6px 0"><span class="small">${label}:</span> `+
-          ids.slice(0,5).map(i=>`<span class="answer src">${DATA.points[i].text.slice(0,22)}…</span>`).join("")+`</div>`;
+        const pill=i=>`<span class="src">${DATA.points[i].text.slice(0,20)}…</span>`;
+        const row=(label,ids)=>`<div class="mrow"><span class="lbl">${label}</span><span>${ids.slice(0,4).map(pill).join("")}</span></div>`;
         return `<div class="chips"><span class="b">keyword list</span><span class="a">+</span><span class="b">meaning list</span><span class="a">→</span><span class="b on">one ranked list</span></div>`+
           row("by words",[...kw]) + row("by meaning",near) +
           `<div class="note">Notes in <strong>both</strong> lists (${both.length}) rise to the top.</div>`; },
