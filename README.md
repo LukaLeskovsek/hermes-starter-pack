@@ -7,9 +7,13 @@ Your guided path to a working personal operator agent. **You don't need the term
 1. Open **Claude Code** inside this folder (`hermes-starter-pack/`):
    - **macOS** → in **Terminal**.
    - **Windows** → in your **WSL/Ubuntu terminal** if you set up WSL for the week, otherwise in **PowerShell**.
-2. Say this:
+2. Say this (paste it in your language):
 
-   > **"Read STARTER.md and set up my Hermes — guide me and pause for my approval at each step."**
+   > 🇸🇮 **"Preberi STARTER.md in mi nastavi Hermesa — vodi me in se pred vsakim korakom ustavi za mojo odobritev."**
+   >
+   > 🇬🇧 **"Read STARTER.md and set up my Hermes — guide me and pause for my approval at each step."**
+
+   Claude replies in whatever language you write to it — write in Slovenian and it guides you in Slovenian.
 
 3. Claude figures out your operating system, installs the right way, asks you to choose a path at each fork, and approves each action with you. When Hermes is installed and chatting, Claude hands over to Hermes, which builds your first jobs.
 

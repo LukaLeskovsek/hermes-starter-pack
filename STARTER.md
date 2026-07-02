@@ -5,6 +5,8 @@
 
 Read this whole file first. Then execute the steps in order. **Pause for the founder's approval before each step that installs, writes a key, or starts a service.** Explain what you're about to do in one plain sentence, do it, show the result, then move on. Keep the founder in the driver's seat — they are non-technical, so no jargon dumps.
 
+**Language:** the founder may write to you in Slovenian. **Reply in their language** — this recipe is in English for you, but converse with the founder in Slovenian if that's how they write. Keep tech terms (Hermes, Telegram, model, blueprint, API key) as-is.
+
 ---
 
 ## Ground rules (do not skip)
