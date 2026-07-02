@@ -4,14 +4,18 @@ Your guided path to a working personal operator agent. **You don't need the term
 
 ## How to use this
 
-1. Open **Claude Code** inside this folder (`hermes-starter-pack/`).
+1. Open **Claude Code** inside this folder (`hermes-starter-pack/`):
+   - **macOS** → in **Terminal**.
+   - **Windows** → in your **WSL/Ubuntu terminal** if you set up WSL for the week, otherwise in **PowerShell**.
 2. Say this:
 
    > **"Read STARTER.md and set up my Hermes — guide me and pause for my approval at each step."**
 
-3. Claude walks you through it, asking you to choose a path at each fork and to approve each action. When Hermes is installed and chatting, Claude hands over to Hermes, which builds your first jobs.
+3. Claude figures out your operating system, installs the right way, asks you to choose a path at each fork, and approves each action with you. When Hermes is installed and chatting, Claude hands over to Hermes, which builds your first jobs.
 
 That's it. Everything below is for reference — Claude reads it for you.
+
+> **Where does Hermes keep my files?** macOS / WSL: `~/.hermes/`. Native Windows: `%LOCALAPPDATA%\hermes\`. Claude uses the right one automatically; you rarely need to touch it.
 
 ## What you'll end up with
 

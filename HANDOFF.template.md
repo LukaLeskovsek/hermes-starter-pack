@@ -2,7 +2,8 @@
 
 <!--
 This is the baton between Claude Code (which installed Hermes) and Hermes (which builds from here).
-Claude copies this to ~/.hermes/HANDOFF.md and fills in <angle-bracket> parts.
+Claude copies this into the Hermes home as HANDOFF.md (~/.hermes/ on macOS/WSL,
+%LOCALAPPDATA%\hermes\ on native Windows) and fills in <angle-bracket> parts.
 Hermes reads it at the start of every session and does the NEXT unchecked step.
 Hermes UPDATES this file (checks items off, moves the NEXT marker) — it never edits SOUL.md or AGENTS.md.
 Why a file: Claude and Hermes don't share memory. Disk is the shared medium; this file is the state.

@@ -9,7 +9,7 @@ From your Outlook/Microsoft account:
 
 ## Setup
 1. Install/enable the email skill (the IMAP/SMTP one — ask Hermes: *"set up the email skill for my Outlook over IMAP"*).
-2. Fill the email block in `~/.hermes/.env`:
+2. Fill the email block in your Hermes home `.env` (`~/.hermes/.env` on macOS/WSL, `%LOCALAPPDATA%\hermes\.env` on native Windows):
    ```
    EMAIL_ADDRESS=you@company.com
    EMAIL_PASSWORD=<app-password>
