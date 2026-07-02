@@ -2,6 +2,8 @@
 
 No jargon. Just enough of the "how" that the brain stops feeling like magic and you can use it well. Five ideas, then a walk-through of what happens when you ask a question.
 
+> **Prefer to *see* it?** Open **`../teaching/how-the-brain-works.html`** in your browser — an interactive version of this doc: a real map of meaning you can hover, an "embed a text → watch the pin drop" demo, and the query pipeline stepped through live. (Built from real embeddings; works offline.)
+
 ---
 
 ## 1. Why "a second brain"?

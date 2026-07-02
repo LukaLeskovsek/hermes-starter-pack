@@ -31,6 +31,8 @@ Embeddings run through **OpenRouter** — the same key many of you already set u
 
 Once it's set up, read **`recipes/using-your-brain.md`** — a two-minute tutorial on getting the most out of your brain (hint: you just ask Claude and Hermes in plain language; you never type `gbrain` commands).
 
+Curious how it actually works? Open **`teaching/how-the-brain-works.html`** in your browser — an interactive, plain-language explainer (a real map of meaning, an "embed a text" demo, and the query pipeline stepped through live). Built from real embeddings; works offline.
+
 > **Where does Hermes keep my files?** macOS / WSL: `~/.hermes/`. Native Windows: `%LOCALAPPDATA%\hermes\`. Claude uses the right one automatically; you rarely need to touch it.
 
 ## What you'll end up with
@@ -54,7 +56,8 @@ Once it's set up, read **`recipes/using-your-brain.md`** — a two-minute tutori
 | `config.example.yaml` | Safe defaults — approval tiers, read-first. |
 | `blueprints/` | The three starter jobs, as specs Hermes builds from. |
 | `souls/` | `SOUL.md` persona templates — pick who your agent is. |
-| `recipes/` | Add-your-own-tool guides for Friday (Outlook, Shopify, Zoho, gbrain…). |
+| `recipes/` | Add-your-own-tool guides for Friday (Outlook, Shopify, Zoho, gbrain…) + how-the-brain-works + using-your-brain. |
+| `teaching/` | Interactive HTML explainer of the brain (real map of meaning, embed demo, query stepper). Open the `.html` in a browser. |
 | `facilitator/` | Run-of-show, safety checklist, troubleshooting (for the facilitator). |
 
 ## The two rules we keep all week

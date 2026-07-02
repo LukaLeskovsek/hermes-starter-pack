@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How your company brain works — interactive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ink:#111111; --paper:#ffffff; --orange:#f57c00; --orange-soft:#fff8ee;
+  --muted:#555; --muted2:#777; --line:#ececec; --soft:#f8f8f8; --red:#d32f2f;
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* cluster palette (deck-adjacent, muted) */
+  --c0:#f57c00; --c1:#2e7d32; --c2:#1565c0; --c3:#6a1b9a; --c4:#c2185b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--orange)}
+header{display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  padding:16px 26px;border-bottom:1px solid var(--line)}
+header .brand{font-weight:800;font-size:19px}
+header .brand span{color:var(--orange)}
+.eyebrow{font-family:var(--mono);letter-spacing:.2em;text-transform:uppercase;
+  color:var(--orange);font-weight:700;font-size:12px}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+nav.tabs button{font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  border:1.5px solid var(--line);background:#fff;color:var(--muted);
+  padding:7px 12px;border-radius:7px}
+nav.tabs button.on{border-color:var(--ink);color:var(--ink)}
+nav.tabs button .n{color:var(--orange);margin-right:5px}
+main{display:grid;grid-template-columns:minmax(340px,430px) 1fr;gap:0;height:calc(100vh - 66px)}
+@media (max-width:860px){main{grid-template-columns:1fr;height:auto}}
+.panel{padding:26px 30px;overflow-y:auto;border-right:1px solid var(--line)}
+.panel h1{font-size:30px;font-weight:800;margin:.1em 0 .35em;
+  border-bottom:3px solid var(--orange);padding-bottom:10px;display:inline-block}
+.panel h2{font-size:15px;color:var(--muted);font-weight:500;margin:.2em 0 1em}
+.panel p{font-size:15.5px;line-height:1.62;color:#222}
+.panel .small{font-size:13px;color:var(--muted2);line-height:1.55}
+.stage{position:relative;background:var(--soft)}
+canvas{display:block;width:100%;height:100%}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:20px;background:var(--orange-soft);
+  color:#a85700;border:1px solid #f3d3a6;margin-right:6px}
+.tip{position:absolute;pointer-events:none;background:#111;color:#fff;font-size:12.5px;
+  padding:7px 10px;border-radius:7px;max-width:260px;line-height:1.4;opacity:0;
+  transition:opacity .08s;transform:translate(-50%,-130%);z-index:5;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.tip .c{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.controls button,.toggle{font:inherit;font-size:13px;font-weight:700;cursor:pointer;
+  border:1.5px solid var(--ink);background:#fff;color:var(--ink);padding:7px 12px;border-radius:7px}
+.controls button.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+.controls button:disabled{opacity:.4;cursor:default}
+.toggle.on{background:var(--ink);color:#fff}
+.chips{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:16px 0}
+.chips .b{border:2px solid var(--ink);border-radius:6px;padding:8px 11px;font-weight:700;
+  font-size:12.5px;background:#fff}
+.chips .b.on{border-color:var(--orange);background:var(--orange-soft)}
+.chips .b.done{opacity:.45}
+.chips .a{color:var(--orange);font-weight:800;padding:0 7px}
+.readout{font-family:var(--mono);font-size:12.5px;background:#111;color:#eee;border-radius:8px;
+  padding:12px 14px;margin:12px 0;line-height:1.7;white-space:pre-wrap;min-height:20px}
+.readout .n{color:#ffb570}
+.readout .dim{color:#7a7a7a}
+.ex{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.ex button{font:inherit;font-size:12.5px;cursor:pointer;border:1.5px solid var(--line);
+  background:#fff;border-radius:16px;padding:6px 11px;color:#333;text-align:left}
+.ex button:hover{border-color:var(--orange)}
+.answer{background:#fff;border:1px solid var(--line);border-left:4px solid var(--orange);
+  border-radius:8px;padding:13px 15px;font-size:14px;line-height:1.55;margin-top:12px}
+.answer .src{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--orange-soft);
+  border:1px solid #f3d3a6;color:#a85700;border-radius:5px;padding:1px 7px;margin:3px 4px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.legend .l{display:flex;align-items:center;gap:6px;font-size:12px;color:#444}
+.legend .dot{width:11px;height:11px;border-radius:50%}
+.k{font-family:var(--mono);font-size:12px;background:#f0f0f0;border-radius:4px;padding:1px 6px}
+.hide{display:none !important}
+.note{font-size:12.5px;color:var(--muted2);border-left:3px solid var(--line);padding:6px 12px;margin:12px 0}
+.step-nav{display:flex;gap:8px;align-items:center;margin-top:14px}
+.step-nav .count{font-family:var(--mono);font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="eyebrow">SPS AI Accelerator · gbrain</div>
+    <div class="brand">How your <span>company brain</span> works</div>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+
+<main>
+  <section class="panel" id="panel"></section>
+  <section class="stage">
+    <canvas id="cv"></canvas>
+    <div class="tip" id="tip"></div>
+  </section>
+</main>
+
+<script id="embed-data" type="application/json">{"meta":{"model":"openai/text-embedding-3-small","dims":1536,"generated":"build-time","note":"Real embeddings; x/y are true PCA(2) coords. vec8 = first 8 real dims. Positions are genuine — clusters that overlap, overlap for real.","clusters":["Delivery & Returns","Pricing","People & Team","Product","Brand Voice"]},"points":[{"id":0,"text":"Our refund window is 30 days.","cluster":"Delivery & Returns","x":0.8172,"y":0.3476,"vec8":[-0.0477,0.0815,0.0011,0.007,-0.0084,0.0135,0.0162,0.0511]},{"id":1,"text":"Customers can return items within a month.","cluster":"Delivery & Returns","x":0.8136,"y":0.3486,"vec8":[-0.0109,0.0914,0.0156,0.0164,0.0224,0.0131,-0.0174,0.0667]},{"id":2,"text":"EU orders ship within 3 business days via DHL.","cluster":"Delivery & Returns","x":0.9021,"y":0.5733,"vec8":[-0.0386,0.0251,0.0276,-0.0119,0.0349,0.0207,-0.0029,0.0244]},{"id":3,"text":"Delivery to European Union countries takes 3 to 5 days.","cluster":"Delivery & Returns","x":0.94,"y":0.5874,"vec8":[-0.0489,0.0321,0.0056,-0.0023,0.0002,0.0185,0.0337,0.0179]},{"id":4,"text":"We cover return shipping costs for defective products.","cluster":"Delivery & Returns","x":0.7883,"y":0.5273,"vec8":[0.0227,0.048,0.0175,0.0204,-0.0204,0.0097,0.0051,0.0384]},{"id":5,"text":"Refunds are processed back to the original payment method.","cluster":"Delivery & Returns","x":0.6523,"y":0.3321,"vec8":[-0.0062,0.0207,0.0162,0.0254,-0.011,-0.0012,-0.0011,0.0618]},{"id":6,"text":"The Pro plan costs 29 euros per month.","cluster":"Pricing","x":0.4754,"y":0.1837,"vec8":[-0.0332,-0.0071,0.0595,-0.0329,0.0198,0.0072,-0.0067,0.0547]},{"id":7,"text":"Enterprise pricing is custom and billed annually.","cluster":"Pricing","x":0.4279,"y":0.242,"vec8":[-0.0224,0,0.0544,0.0056,-0.0066,0.0348,-0.0242,0.0438]},{"id":8,"text":"We offer a 20 percent discount for yearly billing.","cluster":"Pricing","x":0.5125,"y":0.2519,"vec8":[0.0006,0.0161,0.0099,0.012,0.0271,0.0687,-0.0416,0.0709]},{"id":9,"text":"There is a free tier with limited features.","cluster":"Pricing","x":0.2125,"y":0.2296,"vec8":[0.0208,0.0252,0.0357,-0.019,-0.0073,-0.0324,-0.0234,0.0595]},{"id":10,"text":"Ana leads our customer support team.","cluster":"People & Team","x":0.2475,"y":0.486,"vec8":[0.0141,-0.0304,0.051,0.0117,-0.0042,0.0066,-0.0068,0.0252]},{"id":11,"text":"Our CTO Marko oversees engineering.","cluster":"People & Team","x":0.1699,"y":0.4965,"vec8":[-0.0082,0.0291,0.0035,-0.0429,-0.0122,0.0593,0.0103,0.0126]},{"id":12,"text":"The founder handles all partnership deals.","cluster":"People & Team","x":0.1467,"y":0.4998,"vec8":[0.0102,-0.0018,0.053,0.033,-0.012,-0.0022,0.0179,0.0436]},{"id":13,"text":"New hires complete a two-week onboarding.","cluster":"People & Team","x":0.3417,"y":0.422,"vec8":[-0.0433,0.0381,-0.0021,-0.008,-0.0351,0.0373,0.0381,0.0472]},{"id":14,"text":"The dashboard shows real-time sales analytics.","cluster":"Product","x":0.1934,"y":0.104,"vec8":[-0.0149,0.01,0.0075,0.0074,0.0342,0.0108,-0.0341,0.0064]},{"id":15,"text":"Users can export reports as PDF or CSV.","cluster":"Product","x":0.2819,"y":0.2044,"vec8":[-0.0516,0.0158,0.0645,-0.0509,0.0262,-0.026,-0.0238,0.0467]},{"id":16,"text":"Our mobile app works offline and syncs later.","cluster":"Product","x":0.1953,"y":0.2623,"vec8":[-0.019,0.0329,0.0109,-0.0129,0.0079,0.0003,0.0377,-0.0287]},{"id":17,"text":"The API lets developers pull order data.","cluster":"Product","x":0.3387,"y":0.2005,"vec8":[0.0061,-0.0273,-0.0287,-0.0319,0.0531,-0.04,-0.0576,0.0113]},{"id":18,"text":"The analytics view can filter by region and date.","cluster":"Product","x":0.2566,"y":0.06,"vec8":[-0.0465,0.031,0.0518,-0.0281,-0.0124,0.0073,-0.0301,-0.0026]},{"id":19,"text":"We write in a warm, plain, and direct tone.","cluster":"Brand Voice","x":0.1979,"y":0.94,"vec8":[0.0612,0.0377,-0.006,-0.0007,0.0455,-0.0159,-0.0086,-0.0068]},{"id":20,"text":"Avoid jargon; explain things like to a smart friend.","cluster":"Brand Voice","x":0.06,"y":0.7955,"vec8":[0.0181,0.0191,-0.0732,0.0355,0.0149,-0.0177,-0.0438,-0.0022]},{"id":21,"text":"Always be honest about limitations and trade-offs.","cluster":"Brand Voice","x":0.0679,"y":0.6699,"vec8":[0.0217,0.024,0.0357,0.0476,0.0225,-0.0044,-0.0188,-0.0054]},{"id":22,"text":"Our emails are short and get to the point.","cluster":"Brand Voice","x":0.2569,"y":0.7315,"vec8":[-0.0201,0.0318,-0.0126,0.0171,0.0084,-0.0516,-0.0417,0.0285]}],"query":{"id":23,"text":"What are our delivery terms for EU orders?","x":0.8602,"y":0.638,"vec8":[-0.0159,0.0204,0.0154,-0.0307,-0.0012,0.0192,0.0049,0.0173],"rephrasings":["EU shipping policy","delivery times Europe","how long to ship to the EU"],"nearest":[3,2,4,1]},"edges":[[0,1],[1,5],[2,3],[4,1],[6,8],[8,7],[9,6],[10,13],[11,13],[14,15],[14,18],[17,15],[19,20],[20,22]],"check":{"refundReturnCosine":0.557,"refundReturn2Ddist":0.004,"sharedContentWords":[]}}</script>
+<script>
+"use strict";
+const DATA = JSON.parse(document.getElementById("embed-data").textContent);
+const CLUSTERS = DATA.meta.clusters;
+const CCOL = ["--c0","--c1","--c2","--c3","--c4"].map(v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim());
+const colOf = c => CCOL[CLUSTERS.indexOf(c)] || "#999";
+
+// ── canvas plumbing ──────────────────────────────────────────────────────────
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const tipEl = document.getElementById("tip");
+let W=0,H=0,DPR=1,M=54;
+function resize(){
+  const r = cv.parentElement.getBoundingClientRect();
+  DPR = window.devicePixelRatio||1;
+  W=r.width; H=r.height;
+  cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+  draw();
+}
+addEventListener("resize", resize);
+const PX = p => M + p.x*(W-2*M);
+const PY = p => M + (1-p.y)*(H-2*M);   // flip y so "up" is up
+
+// ── view state ───────────────────────────────────────────────────────────────
+const state = {
+  section:"intro",
+  colorBy:true, showEdges:false,
+  hi:new Set(),            // highlighted point ids (glow)
+  dim:new Set(),           // dimmed ids
+  showQuery:false, queryRing:0,
+  keywordHits:new Set(),   // ids with literal keyword match
+  depth:"conservative",    // conservative|balanced|tokenmax
+  labelIds:new Set(),      // ids to always label
+  pulse:null,              // {id, t}
+  ghost:null,              // {x,y,text} approximate pin
+};
+const DEPTH_N = {conservative:3, balanced:6, tokenmax:10};
+
+function nearestToQuery(n){
+  const q = DATA.query;
+  return DATA.points.map(p=>[p.id, Math.hypot(p.x-q.x,p.y-q.y)])
+    .sort((a,b)=>a[1]-b[1]).slice(0,n).map(a=>a[0]);
+}
+
+// ── draw ─────────────────────────────────────────────────────────────────────
+let _drawnLabels=[];
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  _drawnLabels=[];
+  // edges
+  if(state.showEdges){
+    ctx.lineWidth=1.2; ctx.strokeStyle="rgba(120,120,120,.32)";
+    for(const [a,b] of DATA.edges){
+      const pa=DATA.points[a], pb=DATA.points[b];
+      ctx.beginPath(); ctx.moveTo(PX(pa),PY(pa)); ctx.lineTo(PX(pb),PY(pb)); ctx.stroke();
+    }
+  }
+  // "walked" edges during query step 4
+  if(state.walkEdges){
+    ctx.lineWidth=2.4; ctx.strokeStyle=getCss("--orange");
+    for(const [a,b] of state.walkEdges){
+      const pa=DATA.points[a], pb=DATA.points[b];
+      ctx.beginPath(); ctx.moveTo(PX(pa),PY(pa)); ctx.lineTo(PX(pb),PY(pb)); ctx.stroke();
+    }
+  }
+  // pins
+  for(const p of DATA.points){
+    const x=PX(p), y=PY(p);
+    const dim = state.dim.size && state.dim.has(p.id);
+    const hi = state.hi.has(p.id);
+    const kw = state.keywordHits.has(p.id);
+    const base = state.colorBy ? colOf(p.cluster) : "#9DA0A1";
+    // glow for highlighted
+    if(hi){
+      ctx.beginPath(); ctx.arc(x,y,15,0,7); ctx.fillStyle=hexA(getCss("--orange"),.16); ctx.fill();
+      ctx.beginPath(); ctx.arc(x,y,10.5,0,7); ctx.lineWidth=2.2; ctx.strokeStyle=getCss("--orange"); ctx.stroke();
+    }
+    if(kw){ // keyword ring
+      ctx.beginPath(); ctx.arc(x,y,10,0,7); ctx.setLineDash([3,3]); ctx.lineWidth=2; ctx.strokeStyle="#111"; ctx.stroke(); ctx.setLineDash([]);
+    }
+    ctx.beginPath(); ctx.arc(x,y,6.4,0,7);
+    ctx.fillStyle = dim ? hexA(base,.28) : base; ctx.fill();
+    ctx.lineWidth=1.2; ctx.strokeStyle = dim ? "rgba(0,0,0,.12)" : "rgba(0,0,0,.35)"; ctx.stroke();
+    if(state.labelIds.has(p.id) && !dim) drawLabel(p,x,y,base);
+  }
+  // pulse ring (embed demo)
+  if(state.pulse){
+    const p=DATA.points[state.pulse.id], x=PX(p), y=PY(p), t=state.pulse.t;
+    ctx.beginPath(); ctx.arc(x,y,8+t*34,0,7); ctx.lineWidth=2.4;
+    ctx.strokeStyle=hexA(getCss("--orange"),1-t); ctx.stroke();
+  }
+  // approximate ghost pin (arbitrary typed text)
+  if(state.ghost){
+    const x=M+state.ghost.x*(W-2*M), y=M+(1-state.ghost.y)*(H-2*M);
+    ctx.beginPath(); ctx.arc(x,y,7,0,7); ctx.setLineDash([2,3]); ctx.lineWidth=2;
+    ctx.strokeStyle="#111"; ctx.fillStyle="rgba(0,0,0,.05)"; ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // query pin (diamond)
+  if(state.showQuery){
+    const q=DATA.query, x=PX(q), y=PY(q);
+    if(state.queryRing>0){
+      ctx.beginPath(); ctx.arc(x,y,12+state.queryRing,0,7);
+      ctx.strokeStyle=hexA("#111",.5); ctx.lineWidth=1.5; ctx.stroke();
+    }
+    ctx.save(); ctx.translate(x,y); ctx.rotate(Math.PI/4);
+    ctx.fillStyle="#111"; ctx.fillRect(-7,-7,14,14);
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(x,y,13,0,7); ctx.lineWidth=2.4; ctx.strokeStyle=getCss("--orange"); ctx.stroke();
+    drawLabel({text:"your question"},x,y,"#111",true);
+  }
+}
+function drawLabel(p,x,y,col,strong){
+  const t = p.text.length>30 ? p.text.slice(0,29)+"…" : p.text;
+  ctx.font = (strong?"700 ":"600 ")+"11.5px Inter, sans-serif";
+  const w = ctx.measureText(t).width+12;
+  let lx = x+12, ly = y-8;
+  if(lx+w > W-6) lx = x-12-w;
+  // avoid overlapping an already-drawn label (e.g. the refund/return pair)
+  let guard=0;
+  while(guard++<8 && _drawnLabels.some(r=>lx< r.x+r.w && lx+w> r.x && ly-13< r.y+r.h && ly+6> r.y)) ly+=19;
+  _drawnLabels.push({x:lx,y:ly-13,w,h:19});
+  ctx.fillStyle="rgba(255,255,255,.92)"; roundRect(lx,ly-13,w,19,5); ctx.fill();
+  ctx.fillStyle= strong?"#111":"#333"; ctx.fillText(t, lx+6, ly);
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+const getCss = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function hexA(hex,a){const h=hex.replace("#","");const n=parseInt(h.length===3?h.replace(/./g,c=>c+c):h,16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;}
+
+// ── hover tooltip ────────────────────────────────────────────────────────────
+cv.addEventListener("mousemove", e=>{
+  const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  let best=null,bd=1e9;
+  for(const p of DATA.points){const d=Math.hypot(PX(p)-mx,PY(p)-my); if(d<bd){bd=d;best=p;}}
+  if(best && bd<14){
+    tipEl.innerHTML=`<div class="c">${best.cluster}</div>${best.text}`;
+    tipEl.style.left=PX(best)+"px"; tipEl.style.top=PY(best)+"px"; tipEl.style.opacity=1;
+  } else tipEl.style.opacity=0;
+});
+cv.addEventListener("mouseleave",()=>tipEl.style.opacity=0);
+
+// ── animation helpers ────────────────────────────────────────────────────────
+let raf=null;
+function animate(dur, onFrame, onDone){
+  cancelAnimationFrame(raf); const t0=performance.now();
+  (function loop(now){ const t=Math.min(1,(now-t0)/dur); onFrame(t); draw();
+    if(t<1) raf=requestAnimationFrame(loop); else onDone&&onDone(); })(t0);
+}
+const sleep = ms=>new Promise(r=>setTimeout(r,ms));
+
+// ── SECTIONS ─────────────────────────────────────────────────────────────────
+const SECTIONS = [
+  {id:"intro",   label:"Second brain"},
+  {id:"map",     label:"Map of meaning"},
+  {id:"embed",   label:"Embed a text"},
+  {id:"query",   label:"A query, step by step"},
+  {id:"recap",   label:"Recap"},
+];
+const tabsEl=document.getElementById("tabs");
+SECTIONS.forEach((s,i)=>{
+  const b=document.createElement("button");
+  b.innerHTML=`<span class="n">${i+1}</span>${s.label}`;
+  b.onclick=()=>go(s.id); b.dataset.id=s.id; tabsEl.appendChild(b);
+});
+
+function resetView(){
+  Object.assign(state,{hi:new Set(),dim:new Set(),showQuery:false,queryRing:0,
+    keywordHits:new Set(),labelIds:new Set(),pulse:null,ghost:null,walkEdges:null});
+}
+function legendHTML(){
+  return `<div class="legend">`+CLUSTERS.map((c,i)=>
+    `<div class="l"><span class="dot" style="background:${CCOL[i]}"></span>${c}</div>`).join("")+`</div>`;
+}
+
+function go(id){
+  state.section=id; resetView();
+  [...tabsEl.children].forEach(b=>b.classList.toggle("on",b.dataset.id===id));
+  renderPanel(); resize();
+}
+const panel=document.getElementById("panel");
+
+function renderPanel(){
+  const P = {
+    intro(){
+      state.colorBy=true; state.showEdges=false; state.dim=new Set(DATA.points.map(p=>p.id));
+      panel.innerHTML=`
+        <div class="eyebrow">Part 1</div>
+        <h1>A second brain</h1>
+        <h2>An outside memory for your business</h2>
+        <p>Your own brain forgets, and it can't instantly connect a note from January to a question in July. A <strong>second brain</strong> is an outside memory that does three things yours can't:</p>
+        <p style="margin:.4em 0"><span class="badge">remembers</span> everything you feed it, exactly.<br>
+        <span class="badge">connects</span> ideas across all of it.<br>
+        <span class="badge">hands it back</span> the moment you or your AI ask.</p>
+        <p>It's not smarter than you — a filing assistant with a perfect memory, sitting next to Claude and Hermes, whispering the relevant bits from <em>your</em> documents.</p>
+        <p class="small">On the right: 23 sentences from a little company's documents. Right now they're just dots. Next, we'll see how the brain arranges them by <strong>meaning</strong>. →</p>
+        <div class="controls"><button class="primary" onclick="go('map')">See the map of meaning →</button></div>`;
+    },
+    map(){
+      state.colorBy=true;
+      // label the refund/return pair
+      const refund=DATA.points.find(p=>p.text.includes("refund window"));
+      const ret=DATA.points.find(p=>p.text.includes("return items"));
+      state.labelIds=new Set([refund.id,ret.id]);
+      panel.innerHTML=`
+        <div class="eyebrow">Part 2 · Embeddings + Taxonomy + Graph</div>
+        <h1>The map of meaning</h1>
+        <p>Every sentence gets a pin dropped on a giant map. The map isn't about place — it's about <strong>meaning</strong>. Sentences that mean similar things land close together. An <strong>embedding</strong> is just that pin's coordinates (a list of 1,536 numbers).</p>
+        <p><strong>Taxonomy</strong> is the colour — which bucket each note belongs to. <strong>The graph</strong> is the web of links between related notes.</p>
+        <div class="controls">
+          <button class="toggle on" id="tgTax">Colour by taxonomy</button>
+          <button class="toggle" id="tgEdge">Show connections (graph)</button>
+        </div>
+        ${legendHTML()}
+        <div class="note"><strong>Proof it's meaning, not words:</strong> the two labelled pins —
+        <em>"Our refund window is 30 days"</em> and <em>"Customers can return items within a month"</em> —
+        sit almost on top of each other. Real cosine similarity <strong>${DATA.check.refundReturnCosine}</strong>,
+        yet they share <strong>zero</strong> content words. The map matched their <em>meaning</em>.</p>
+        <p class="small">Hover any pin to read its sentence. These positions are real — computed from true embeddings, projected to 2D.</p>`;
+      document.getElementById("tgTax").onclick=e=>{state.colorBy=!state.colorBy;e.target.classList.toggle("on",state.colorBy);draw();};
+      document.getElementById("tgEdge").onclick=e=>{state.showEdges=!state.showEdges;e.target.classList.toggle("on",state.showEdges);draw();};
+    },
+    embed(){
+      state.colorBy=true;
+      panel.innerHTML=`
+        <div class="eyebrow">Part 3</div>
+        <h1>Embed a text</h1>
+        <p>Watch a sentence become a pin. The model turns the words into <strong>1,536 numbers</strong> — its coordinates on the map. Click one:</p>
+        <div class="ex" id="exBtns"></div>
+        <div class="readout" id="embRead">Pick a sentence above…</div>
+        <div style="margin-top:14px">
+          <input id="freeText" placeholder="…or type your own" style="width:100%;font:inherit;padding:9px 11px;border:1.5px solid var(--line);border-radius:7px"/>
+          <div class="controls"><button id="freeGo">Place it (approximate)</button></div>
+          <div class="note" id="freeNote" style="display:none"></div>
+        </div>`;
+      const ex=document.getElementById("exBtns");
+      ["refund window","EU orders ship","Pro plan costs","Ana leads","warm, plain"].forEach(frag=>{
+        const p=DATA.points.find(pp=>pp.text.includes(frag));
+        const b=document.createElement("button"); b.textContent=p.text; b.onclick=()=>embedDemo(p); ex.appendChild(b);
+      });
+      document.getElementById("freeGo").onclick=freeEmbed;
+    },
+    query(){
+      state.colorBy=true; state.showEdges=false; startQuery();
+      // panel filled by renderQueryStep()
+    },
+    recap(){
+      state.colorBy=true; state.showEdges=true; state.showQuery=true;
+      panel.innerHTML=`
+        <div class="eyebrow">Recap</div>
+        <h1>One breath</h1>
+        <p>Your documents become <strong>pins on a map of meaning</strong> (embeddings), shelved into <strong>pages about things</strong> (taxonomy), wired together by <strong>links</strong> (the graph).</p>
+        <p>When you ask, the brain <strong>rephrases</strong> your question, searches by <strong>words</strong> and by <strong>meaning</strong>, <strong>merges</strong> the results, walks a few <strong>connections</strong>, and hands Claude or Hermes the best of <em>your</em> knowledge — <strong>with sources</strong>.</p>
+        <p class="small">All of it happens in a second or two, every time you ask — and you never see any of it. You just ask in plain language.</p>
+        <div class="controls">
+          <button class="primary" onclick="go('map')">↻ Explore the map</button>
+          <button onclick="go('query')">↻ Replay a query</button>
+        </div>`;
+    },
+  };
+  (P[state.section]||P.intro)();
+}
+
+// ── embed demo animation ─────────────────────────────────────────────────────
+async function embedDemo(p){
+  const read=document.getElementById("embRead");
+  state.dim=new Set(DATA.points.map(x=>x.id)); state.hi=new Set(); draw();
+  read.innerHTML=`<span class="dim">text →</span> "${p.text}"`;
+  await sleep(500);
+  const toks=p.text.replace(/[.,;]/g,"").split(/\s+/);
+  read.innerHTML+=`\n<span class="dim">tokens →</span> ${toks.map(t=>`[${t}]`).join(" ")}`;
+  await sleep(600);
+  read.innerHTML+=`\n<span class="dim">1,536 numbers →</span> `;
+  let line="";
+  for(let i=0;i<p.vec8.length;i++){ line+=`<span class="n">${p.vec8[i].toFixed(3)}</span> `; read.innerHTML=embRead(p,toks,line+"…"); await sleep(120); }
+  read.innerHTML=embRead(p,toks,line+`<span class="dim">… +1528 more</span>`);
+  await sleep(250);
+  // drop the pin: undim it, pulse
+  state.dim.delete(p.id); state.hi=new Set([p.id]); state.labelIds=new Set([p.id]);
+  read.innerHTML+=`\n<span class="dim">→ pin drops in</span> ${p.cluster}`;
+  animate(900,t=>{state.pulse={id:p.id,t};},()=>{state.pulse=null;draw();});
+}
+function embRead(p,toks,nums){
+  return `<span class="dim">text →</span> "${p.text}"\n`+
+         `<span class="dim">tokens →</span> ${toks.map(t=>`[${t}]`).join(" ")}\n`+
+         `<span class="dim">1,536 numbers →</span> ${nums}`;
+}
+function freeEmbed(){
+  const v=document.getElementById("freeText").value.trim(); if(!v)return;
+  // honest approximation: nearest baked pin by word overlap
+  const words=new Set(v.toLowerCase().split(/\W+/).filter(w=>w.length>3));
+  let best=DATA.points[0],bs=-1;
+  for(const p of DATA.points){
+    const pw=new Set(p.text.toLowerCase().split(/\W+/).filter(w=>w.length>3));
+    let inter=0; words.forEach(w=>{if(pw.has(w))inter++;});
+    const s=inter/(words.size+pw.size-inter||1);
+    if(s>bs){bs=s;best=p;}
+  }
+  state.ghost={x:best.x,y:best.y,text:v}; state.hi=new Set([best.id]); state.labelIds=new Set([best.id]);
+  state.dim=new Set(); draw();
+  const n=document.getElementById("freeNote"); n.style.display="block";
+  n.innerHTML=`Real embeddings need the model (and a key), so offline we can't make a true vector for arbitrary text. This dropped your text next to its <strong>closest known example</strong> — <em>"${best.text}"</em> — by word overlap. It's an <strong>approximation</strong>, not a real embedding. Every <em>coloured</em> pin, though, is the real thing.`;
+}
+
+// ── query assembly line ──────────────────────────────────────────────────────
+let qStep=0;
+const KW = ["EU","delivery","orders","terms"];
+function startQuery(){ qStep=0; renderQueryStep(); }
+function queryKeywordHits(){
+  const hits=new Set();
+  for(const p of DATA.points){ const low=p.text.toLowerCase();
+    if(KW.some(k=>low.includes(k.toLowerCase()))) hits.add(p.id); }
+  return hits;
+}
+function renderQueryStep(){
+  resetView(); state.colorBy=true;
+  const q=DATA.query;
+  const steps=[
+    { // 1 understand & rephrase
+      title:"Understand & rephrase",
+      body:`The brain reads your question and quietly writes a few alternative phrasings. Casting a wider net catches documents that worded it differently. <em>(This is “expansion.”)</em>`,
+      extra:`<div class="readout"><span class="dim">you asked →</span> “${q.text}”\n<span class="dim">also searching →</span>\n`+q.rephrasings.map(r=>`  <span class="n">• ${r}</span>`).join("\n")+`</div>`,
+      apply(){ state.showQuery=true; state.dim=new Set(DATA.points.map(p=>p.id)); }
+    },
+    { // 2 search two ways
+      title:"Search two ways at once",
+      body:`<strong>By words</strong> — a fast keyword search for the literal terms (dashed rings). <strong>By meaning</strong> — it drops a pin for your question on the map and grabs the nearest notes (orange glow).`,
+      extra:`<div class="legend"><div class="l"><span class="dot" style="background:#111"></span>your question</div>
+             <div class="l">◌ keyword match</div><div class="l">◯ nearest by meaning</div></div>
+             <div class="controls" style="margin-top:10px">
+               <span class="small" style="align-self:center">depth:</span>
+               <button class="toggle ${state.depth==='conservative'?'on':''}" data-d="conservative">conservative</button>
+               <button class="toggle ${state.depth==='balanced'?'on':''}" data-d="balanced">balanced</button>
+               <button class="toggle ${state.depth==='tokenmax'?'on':''}" data-d="tokenmax">tokenmax</button>
+             </div>
+             <div class="note">The depth dial widens the net: more nearest-notes, deeper (and pricier) answers.</div>`,
+      apply(){ state.showQuery=true; state.keywordHits=queryKeywordHits();
+        const near=nearestToQuery(DEPTH_N[state.depth]); state.hi=new Set(near);
+        state.dim=new Set(DATA.points.filter(p=>!state.hi.has(p.id)&&!state.keywordHits.has(p.id)).map(p=>p.id)); }
+    },
+    { // 3 merge
+      title:"Merge the two lists",
+      body:`Each search returns a ranked list; the brain fuses them into one, so a note that scores well on <strong>both</strong> rises to the top. <em>(The formal name is “reciprocal rank fusion.”)</em>`,
+      extra(){ const near=nearestToQuery(DEPTH_N[state.depth]); const kw=queryKeywordHits();
+        const both=near.filter(i=>kw.has(i));
+        const row=(label,ids)=>`<div style="margin:6px 0"><span class="small">${label}:</span> `+
+          ids.slice(0,5).map(i=>`<span class="answer src">${DATA.points[i].text.slice(0,22)}…</span>`).join("")+`</div>`;
+        return `<div class="chips"><span class="b">keyword list</span><span class="a">+</span><span class="b">meaning list</span><span class="a">→</span><span class="b on">one ranked list</span></div>`+
+          row("by words",[...kw]) + row("by meaning",near) +
+          `<div class="note">Notes in <strong>both</strong> lists (${both.length}) rise to the top.</div>`; },
+      apply(){ state.showQuery=true; const near=nearestToQuery(DEPTH_N[state.depth]); const kw=queryKeywordHits();
+        const both=new Set(near.filter(i=>kw.has(i)));
+        state.hi=both.size?both:new Set(near.slice(0,3));
+        state.dim=new Set(DATA.points.filter(p=>!state.hi.has(p.id)).map(p=>p.id)); }
+    },
+    { // 4 pick best + walk graph
+      title:"Pick the best, within a budget",
+      body:`It keeps the strongest handful, <strong>walks a few graph links</strong> for context, and fits them into a size limit so the answer stays fast and cheap.`,
+      extra:`<div class="note">Orange lines = connections “walked” from the top hits to pull in related context.</div>`,
+      apply(){ state.showQuery=true;
+        const top=nearestToQuery(3); state.hi=new Set(top);
+        // walked edges: any edge touching a top hit
+        state.walkEdges=DATA.edges.filter(([a,b])=>top.includes(a)||top.includes(b));
+        const keep=new Set(top); state.walkEdges.forEach(([a,b])=>{keep.add(a);keep.add(b);});
+        state.dim=new Set(DATA.points.filter(p=>!keep.has(p.id)).map(p=>p.id));
+        state.labelIds=new Set(top); }
+    },
+    { // 5 answer with receipts
+      title:"Answer with receipts",
+      body:`Claude or Hermes reads those top notes and writes your answer — and can tell you <strong>which document</strong> each part came from. An answer you can trust and trace.`,
+      extra(){ const top=nearestToQuery(2);
+        return `<div class="answer">Your EU orders ship within <strong>3 business days via DHL</strong>, and delivery across the EU takes <strong>3–5 days</strong>.<br>
+        <span class="src">📄 ${DATA.points[top[0]].text}</span><span class="src">📄 ${DATA.points[top[1]].text}</span></div>
+        <p class="small" style="margin-top:14px">All of that happened in a second or two — and you never saw any of it. You just asked in plain language.</p>`; },
+      apply(){ state.showQuery=true; const top=nearestToQuery(2);
+        state.hi=new Set(top); state.labelIds=new Set(top);
+        state.dim=new Set(DATA.points.filter(p=>!top.includes(p.id)).map(p=>p.id)); }
+    },
+  ];
+  const s=steps[qStep];
+  const extra = typeof s.extra==="function" ? s.extra() : s.extra;
+  panel.innerHTML=`
+    <div class="eyebrow">Part 4 · The query assembly line</div>
+    <h1>A query, step by step</h1>
+    <div class="chips">${steps.map((st,i)=>`<span class="b ${i===qStep?'on':i<qStep?'done':''}">${i+1}</span>${i<steps.length-1?'<span class="a">›</span>':''}`).join("")}</div>
+    <h2 style="color:#111;font-weight:800;font-size:19px;margin:.2em 0 .5em">${qStep+1}. ${s.title}</h2>
+    <p>${s.body}</p>
+    ${extra||""}
+    <div class="step-nav">
+      <button class="toggle" id="qPrev" ${qStep===0?'disabled':''}>← Back</button>
+      <button class="toggle" id="qNext" ${qStep===steps.length-1?'disabled':''}>Next →</button>
+      <span class="count">${qStep+1} / ${steps.length}</span>
+    </div>`;
+  // depth buttons (step 2)
+  panel.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{state.depth=b.dataset.d;renderQueryStep();});
+  const prev=document.getElementById("qPrev"), next=document.getElementById("qNext");
+  if(prev) prev.onclick=()=>{if(qStep>0){qStep--;renderQueryStep();}};
+  if(next) next.onclick=()=>{if(qStep<steps.length-1){qStep++;renderQueryStep();}};
+  s.apply();
+  // gentle query-ring pulse
+  if(state.showQuery) animate(700,t=>{state.queryRing=Math.sin(t*Math.PI)*10;},()=>{state.queryRing=0;draw();});
+  else draw();
+}
+
+// keyboard
+addEventListener("keydown",e=>{
+  const idx=SECTIONS.findIndex(s=>s.id===state.section);
+  if(e.key>="1"&&e.key<="5"){ go(SECTIONS[+e.key-1].id); }
+  else if(state.section==="query"){
+    if(e.key==="ArrowRight"){document.getElementById("qNext")?.click();}
+    if(e.key==="ArrowLeft"){document.getElementById("qPrev")?.click();}
+  } else if(e.key==="ArrowRight"&&idx<SECTIONS.length-1){go(SECTIONS[idx+1].id);}
+  else if(e.key==="ArrowLeft"&&idx>0){go(SECTIONS[idx-1].id);}
+});
+
+// boot
+go("intro");
+</script>
+</body>
+</html>
