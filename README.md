@@ -23,11 +23,13 @@ That's it. Everything below is for reference — Claude reads it for you.
 
 Give both Claude and Hermes a memory of *your* business — a private, local second brain. Open Claude Code in this folder and say:
 
-> 🇸🇮 **"Preberi SETUP-GBRAIN.md in mi namesti gbrain — lokalno, brez Postgresa, z OpenAI embeddings. Poveži ga s Claude in s Hermesom, uvozi moje dokumente in nastavi samodejno vzdrževanje. Vodi me in se pred vsakim korakom ustavi za mojo odobritev."**
+> 🇸🇮 **"Preberi SETUP-GBRAIN.md in mi namesti gbrain — lokalno, brez Postgresa. Vprašaj me, kje so moji dokumenti, poveži brain s Claude in s Hermesom, testiraj (najprej v Claude, nato v Hermesu) in nastavi periodično uvažanje dokumentov. Vodi me in se pred vsakim korakom ustavi za mojo odobritev."**
 >
-> 🇬🇧 **"Read SETUP-GBRAIN.md and install gbrain for me — local, no Postgres, OpenAI embeddings. Connect it to Claude and to Hermes, import my documents, and set up automatic maintenance. Guide me and pause for my approval at each step."**
+> 🇬🇧 **"Read SETUP-GBRAIN.md and install gbrain for me — local, no Postgres. Ask me where my documents are, wire the brain into Claude and Hermes, test it (Claude first, then Hermes), and set up periodic document ingestion. Guide me and pause for my approval at each step."**
 
-You'll need an **OpenAI API key** (Claude walks you through getting one). Everything stays on your laptop; it keeps itself up to date.
+Embeddings run through **OpenRouter** — the same key many of you already set up for Hermes (or go fully local with Ollama, no key). Everything stays on your laptop; it re-reads your documents on a schedule and keeps itself up to date.
+
+Once it's set up, read **`recipes/using-your-brain.md`** — a two-minute tutorial on getting the most out of your brain (hint: you just ask Claude and Hermes in plain language; you never type `gbrain` commands).
 
 > **Where does Hermes keep my files?** macOS / WSL: `~/.hermes/`. Native Windows: `%LOCALAPPDATA%\hermes\`. Claude uses the right one automatically; you rarely need to touch it.
 

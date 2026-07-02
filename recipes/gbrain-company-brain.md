@@ -2,7 +2,7 @@
 
 Give your agent your own knowledge so it stops guessing and starts citing.
 
-> **Full install:** the complete, step-by-step recipe Claude runs — install, OpenAI embeddings, import your docs, wire into **both Claude and Hermes**, and schedule self-maintenance — is in **`SETUP-GBRAIN.md`** at the top of this pack. This file is the short conceptual version.
+> **Full install:** the complete, step-by-step recipe Claude runs — install, OpenRouter (or local Ollama) embeddings, import your docs, wire into **both Claude and Hermes**, test, and schedule periodic ingestion — is in **`SETUP-GBRAIN.md`** at the top of this pack. This file is the short conceptual version.
 
 ## The idea
 **gbrain** is a local second brain. You point it at your company documents; it indexes them; then Hermes can query it and answer **with citations from your own docs** instead of from the open internet.
