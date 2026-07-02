@@ -195,8 +195,14 @@ function draw(){
   // approximate ghost pin (arbitrary typed text)
   if(state.ghost){
     const x=M+state.ghost.x*(W-2*M), y=M+(1-state.ghost.y)*(H-2*M);
-    ctx.beginPath(); ctx.arc(x,y,7,0,7); ctx.setLineDash([2,3]); ctx.lineWidth=2;
-    ctx.strokeStyle="#111"; ctx.fillStyle="rgba(0,0,0,.05)"; ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+    if(state.ghostPulse!=null){
+      ctx.beginPath(); ctx.arc(x,y,9+state.ghostPulse*40,0,7); ctx.lineWidth=2.4;
+      ctx.strokeStyle=hexA("#111",1-state.ghostPulse); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(x,y,8,0,7); ctx.setLineDash([2,3]); ctx.lineWidth=2.4;
+    ctx.strokeStyle="#111"; ctx.fillStyle="rgba(255,255,255,.7)"; ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+    const t = state.ghost.text.length>26 ? state.ghost.text.slice(0,25)+"…" : state.ghost.text;
+    drawLabel({text:"“"+t+"” (approx)"}, x, y, "#111", true);
   }
   // query pin (diamond)
   if(state.showQuery){
@@ -269,7 +275,7 @@ SECTIONS.forEach((s,i)=>{
 
 function resetView(){
   Object.assign(state,{hi:new Set(),dim:new Set(),showQuery:false,queryRing:0,
-    keywordHits:new Set(),labelIds:new Set(),pulse:null,ghost:null,walkEdges:null});
+    keywordHits:new Set(),labelIds:new Set(),pulse:null,ghost:null,ghostPulse:null,walkEdges:null});
 }
 function legendHTML(){
   return `<div class="legend">`+CLUSTERS.map((c,i)=>
@@ -389,7 +395,9 @@ function embRead(p,toks,nums){
          `<span class="dim">1,536 numbers →</span> ${nums}`;
 }
 function freeEmbed(){
-  const v=document.getElementById("freeText").value.trim(); if(!v)return;
+  const n=document.getElementById("freeNote"); n.style.display="block";
+  const v=document.getElementById("freeText").value.trim();
+  if(!v){ n.innerHTML=`<strong>Type a sentence first</strong>, then press Place it — e.g. <em>“how long to ship to Germany”</em>.`; return; }
   // honest approximation: nearest baked pin by word overlap
   const words=new Set(v.toLowerCase().split(/\W+/).filter(w=>w.length>3));
   let best=DATA.points[0],bs=-1;
@@ -399,10 +407,9 @@ function freeEmbed(){
     const s=inter/(words.size+pw.size-inter||1);
     if(s>bs){bs=s;best=p;}
   }
-  state.ghost={x:best.x,y:best.y,text:v}; state.hi=new Set([best.id]); state.labelIds=new Set([best.id]);
-  state.dim=new Set(); draw();
-  const n=document.getElementById("freeNote"); n.style.display="block";
-  n.innerHTML=`Real embeddings need the model (and a key), so offline we can't make a true vector for arbitrary text. This dropped your text next to its <strong>closest known example</strong> — <em>"${best.text}"</em> — by word overlap. It's an <strong>approximation</strong>, not a real embedding. Every <em>coloured</em> pin, though, is the real thing.`;
+  state.ghost={x:best.x,y:best.y,text:v}; state.hi=new Set([best.id]); state.labelIds=new Set([best.id]); state.dim=new Set();
+  animate(1000,t=>{state.ghostPulse=t;},()=>{state.ghostPulse=null;draw();});
+  n.innerHTML=`Placed <em>“${v}”</em> next to its <strong>closest known example</strong> — <em>“${best.text}”</em> (look right →). Real embeddings need the model + a key, so offline this is a word-overlap <strong>approximation</strong>, not a true vector. Every <em>coloured</em> pin, though, is the real thing.`;
 }
 
 // ── query assembly line ──────────────────────────────────────────────────────
