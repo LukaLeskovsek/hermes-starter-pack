@@ -77,6 +77,10 @@ canvas{display:block;width:100%;height:100%}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 .legend .l{display:flex;align-items:center;gap:6px;font-size:12px;color:#444}
 .legend .dot{width:11px;height:11px;border-radius:50%}
+.lgbtn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:12px;color:#333;cursor:pointer;
+  border:1.5px solid var(--line);background:#fff;border-radius:16px;padding:5px 11px}
+.lgbtn:hover{border-color:var(--orange)}
+.lgbtn .dot{width:11px;height:11px;border-radius:50%}
 .k{font-family:var(--mono);font-size:12px;background:#f0f0f0;border-radius:4px;padding:1px 6px}
 .hide{display:none !important}
 .note{font-size:12.5px;color:var(--muted2);border-left:3px solid var(--line);padding:6px 12px;margin:12px 0}
@@ -186,6 +190,14 @@ function draw(){
     ctx.lineWidth=1.2; ctx.strokeStyle = dim ? "rgba(0,0,0,.12)" : "rgba(0,0,0,.35)"; ctx.stroke();
     if(state.labelIds.has(p.id) && !dim) drawLabel(p,x,y,base);
   }
+  // legend flash (query step 2) — growing rings on a clicked layer
+  if(state.flash){
+    const t=state.flash.t;
+    const ring=(x,y)=>{ctx.beginPath();ctx.arc(x,y,11+t*32,0,7);ctx.lineWidth=3.2;
+      ctx.strokeStyle=hexA(getCss("--orange"),1-t);ctx.stroke();};
+    state.flash.ids.forEach(i=>{const p=DATA.points[i];ring(PX(p),PY(p));});
+    if(state.flash.query){const q=DATA.query;ring(PX(q),PY(q));}
+  }
   // pulse ring (embed demo)
   if(state.pulse){
     const p=DATA.points[state.pulse.id], x=PX(p), y=PY(p), t=state.pulse.t;
@@ -275,7 +287,7 @@ SECTIONS.forEach((s,i)=>{
 
 function resetView(){
   Object.assign(state,{hi:new Set(),dim:new Set(),showQuery:false,queryRing:0,
-    keywordHits:new Set(),labelIds:new Set(),pulse:null,ghost:null,ghostPulse:null,walkEdges:null});
+    keywordHits:new Set(),labelIds:new Set(),pulse:null,ghost:null,ghostPulse:null,walkEdges:null,flash:null});
 }
 function legendHTML(){
   return `<div class="legend">`+CLUSTERS.map((c,i)=>
@@ -418,9 +430,18 @@ const KW = ["EU","delivery","orders","terms"];
 function startQuery(){ qStep=0; renderQueryStep(); }
 function queryKeywordHits(){
   const hits=new Set();
-  for(const p of DATA.points){ const low=p.text.toLowerCase();
-    if(KW.some(k=>low.includes(k.toLowerCase()))) hits.add(p.id); }
+  const kwLow=KW.map(k=>k.toLowerCase());
+  for(const p of DATA.points){ const words=p.text.toLowerCase().split(/\W+/);  // whole-word match — "euros" ≠ "eu"
+    if(kwLow.some(k=>words.includes(k))) hits.add(p.id); }
   return hits;
+}
+function flashLayer(which){
+  let ids;
+  if(which==='query') ids=[];
+  else if(which==='keyword') ids=[...queryKeywordHits()];
+  else ids=nearestToQuery(DEPTH_N[state.depth]);
+  state.flash={ids, query:which==='query', t:0};
+  animate(950,t=>{state.flash.t=t;},()=>{state.flash=null;draw();});
 }
 function renderQueryStep(){
   resetView(); state.colorBy=true;
@@ -435,8 +456,12 @@ function renderQueryStep(){
     { // 2 search two ways
       title:"Search two ways at once",
       body:`<strong>By words</strong> — a fast keyword search for the literal terms (dashed rings). <strong>By meaning</strong> — it drops a pin for your question on the map and grabs the nearest notes (orange glow).`,
-      extra:`<div class="legend"><div class="l"><span class="dot" style="background:#111"></span>your question</div>
-             <div class="l">◌ keyword match</div><div class="l">◯ nearest by meaning</div></div>
+      extra:`<div class="legend">
+               <button class="lgbtn" data-layer="query"><span class="dot" style="background:#111"></span>your question</button>
+               <button class="lgbtn" data-layer="keyword">◌ keyword match</button>
+               <button class="lgbtn" data-layer="meaning"><span class="dot" style="background:${getCss('--orange')}"></span>nearest by meaning</button>
+             </div>
+             <div class="note" style="margin-top:6px">👆 Click a legend item to flash those pins on the map →</div>
              <div class="controls" style="margin-top:10px">
                <span class="small" style="align-self:center">depth:</span>
                <button class="toggle ${state.depth==='conservative'?'on':''}" data-d="conservative">conservative</button>
@@ -503,6 +528,8 @@ function renderQueryStep(){
     </div>`;
   // depth buttons (step 2)
   panel.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{state.depth=b.dataset.d;renderQueryStep();});
+  // interactive legend (step 2) — flash a layer on the map
+  panel.querySelectorAll("[data-layer]").forEach(b=>b.onclick=()=>flashLayer(b.dataset.layer));
   const prev=document.getElementById("qPrev"), next=document.getElementById("qNext");
   if(prev) prev.onclick=()=>{if(qStep>0){qStep--;renderQueryStep();}};
   if(next) next.onclick=()=>{if(qStep<steps.length-1){qStep++;renderQueryStep();}};
