@@ -84,6 +84,9 @@ canvas{display:block;width:100%;height:100%}
 .k{font-family:var(--mono);font-size:12px;background:#f0f0f0;border-radius:4px;padding:1px 6px}
 .hide{display:none !important}
 .note{font-size:12.5px;color:var(--muted2);border-left:3px solid var(--line);padding:6px 12px;margin:12px 0}
+.pit{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+.pi{font-size:13px;color:#333;background:#fff4f4;border-left:3px solid var(--red);border-radius:0 6px 6px 0;padding:7px 11px}
+.pi b{color:var(--red)}
 .step-nav{display:flex;gap:8px;align-items:center;margin-top:14px}
 .step-nav .count{font-family:var(--mono);font-size:13px;color:var(--muted)}
 </style>
@@ -216,6 +219,17 @@ function draw(){
     const t = state.ghost.text.length>26 ? state.ghost.text.slice(0,25)+"…" : state.ghost.text;
     drawLabel({text:"“"+t+"” (approx)"}, x, y, "#111", true);
   }
+  // overlay caption banner (primary-brain section)
+  if(state.overlay){
+    ctx.save(); ctx.font="600 15px Inter, sans-serif";
+    const lines=state.overlay, pad=16, lh=23;
+    let maxw=0; lines.forEach(l=>maxw=Math.max(maxw,ctx.measureText(l).width));
+    const bw=Math.min(maxw+pad*2, W-40), bh=lines.length*lh+pad; const bx=(W-bw)/2, by=26;
+    ctx.fillStyle="rgba(17,17,17,.93)"; roundRect(bx,by,bw,bh,10); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.textAlign="center";
+    lines.forEach((l,i)=>ctx.fillText(l, W/2, by+pad+ i*lh -1));
+    ctx.textAlign="left"; ctx.restore();
+  }
   // query pin (diamond)
   if(state.showQuery){
     const q=DATA.query, x=PX(q), y=PY(q);
@@ -273,6 +287,7 @@ const sleep = ms=>new Promise(r=>setTimeout(r,ms));
 // ── SECTIONS ─────────────────────────────────────────────────────────────────
 const SECTIONS = [
   {id:"intro",   label:"Second brain"},
+  {id:"primary", label:"The primary brain"},
   {id:"map",     label:"Map of meaning"},
   {id:"embed",   label:"Embed a text"},
   {id:"query",   label:"A query, step by step"},
@@ -287,7 +302,7 @@ SECTIONS.forEach((s,i)=>{
 
 function resetView(){
   Object.assign(state,{hi:new Set(),dim:new Set(),showQuery:false,queryRing:0,
-    keywordHits:new Set(),labelIds:new Set(),pulse:null,ghost:null,ghostPulse:null,walkEdges:null,flash:null});
+    keywordHits:new Set(),labelIds:new Set(),pulse:null,ghost:null,ghostPulse:null,walkEdges:null,flash:null,overlay:null});
 }
 function legendHTML(){
   return `<div class="legend">`+CLUSTERS.map((c,i)=>
@@ -314,8 +329,35 @@ function renderPanel(){
         <span class="badge">connects</span> ideas across all of it.<br>
         <span class="badge">hands it back</span> the moment you or your AI ask.</p>
         <p>It's not smarter than you — a filing assistant with a perfect memory, sitting next to Claude and Hermes, whispering the relevant bits from <em>your</em> documents.</p>
-        <p class="small">On the right: 23 sentences from a little company's documents. Right now they're just dots. Next, we'll see how the brain arranges them by <strong>meaning</strong>. →</p>
-        <div class="controls"><button class="primary" onclick="go('map')">See the map of meaning →</button></div>`;
+        <p class="small">On the right: 23 sentences from a little company's documents. Right now they're just dots. But first — why does the AI even need this? What does it already have? →</p>
+        <div class="controls"><button class="primary" onclick="go('primary')">First: the brain it already has →</button></div>`;
+    },
+    primary(){
+      // grey, dimmed map + overlay caption: "your facts aren't in the model"
+      state.colorBy=false; state.showEdges=false; state.dim=new Set(DATA.points.map(p=>p.id));
+      state.overlay=["The model has never seen these — they're YOUR company's facts.",
+                     "Its own brain knows the world in general, and remembers only this one chat."];
+      panel.innerHTML=`
+        <div class="eyebrow">Part 2 · The other brain</div>
+        <h1>The primary brain</h1>
+        <h2>What Claude and Hermes already have — and where it runs out</h2>
+        <p>Before we add anything, the AI already has a brain: the model itself. It holds <strong>two</strong> kinds of memory.</p>
+        <div class="columns" style="margin:14px 0">
+          <div class="box"><strong>Training knowledge</strong><br><span class="small">Everything it read up to a cut-off date. Vast, but <em>general</em> and <em>frozen</em> — it never saw your company.</span></div>
+          <div class="box"><strong>Context window</strong><br><span class="small">Its short-term memory for <em>this one chat</em>. Big but finite — when it fills, earlier details fall out.</span></div>
+        </div>
+        <p><strong>And it forgets.</strong> Start a new conversation and it remembers nothing — unless something reminds it. (That's why Hermes keeps <code>SOUL.md</code> and memory files.)</p>
+        <h2 style="color:#111;font-weight:800;font-size:18px;margin:.4em 0 .3em">Where it falls short</h2>
+        <div class="pit">
+          <div class="pi"><b>Hallucination</b> — when it doesn't know, it guesses, fluently and confidently.</div>
+          <div class="pi"><b>Knowledge cut-off</b> — it doesn't know anything after its training date.</div>
+          <div class="pi"><b>Not your world</b> — it never saw your prices, people, or policies.</div>
+          <div class="pi"><b>Forgetting</b> — long chats drop earlier detail ("lost in the middle").</div>
+          <div class="pi"><b>No sources</b> — it can't tell you where an answer came from.</div>
+          <div class="pi"><b>Not a database</b> — ask twice, you can get two different answers.</div>
+        </div>
+        <div class="note" style="border-left-color:var(--orange);margin-top:14px">This is exactly what a <strong>second brain</strong> fixes: it grounds answers in <strong>your</strong> documents, gives <strong>sources</strong>, stays <strong>current</strong>, and <strong>persists</strong> across chats. Here's how →</div>
+        <div class="controls"><button class="primary" onclick="go('map')">How the second brain does it →</button></div>`;
     },
     map(){
       state.colorBy=true;
@@ -324,7 +366,7 @@ function renderPanel(){
       const ret=DATA.points.find(p=>p.text.includes("return items"));
       state.labelIds=new Set([refund.id,ret.id]);
       panel.innerHTML=`
-        <div class="eyebrow">Part 2 · Embeddings + Taxonomy + Graph</div>
+        <div class="eyebrow">Part 3 · Embeddings + Taxonomy + Graph</div>
         <h1>The map of meaning</h1>
         <p>Every sentence gets a pin dropped on a giant map. The map isn't about place — it's about <strong>meaning</strong>. Sentences that mean similar things land close together. An <strong>embedding</strong> is just that pin's coordinates (a list of 1,536 numbers).</p>
         <p><strong>Taxonomy</strong> is the colour — which bucket each note belongs to. <strong>The graph</strong> is the web of links between related notes.</p>
@@ -344,7 +386,7 @@ function renderPanel(){
     embed(){
       state.colorBy=true;
       panel.innerHTML=`
-        <div class="eyebrow">Part 3</div>
+        <div class="eyebrow">Part 4</div>
         <h1>Embed a text</h1>
         <p>Watch a sentence become a pin. The model turns the words into <strong>1,536 numbers</strong> — its coordinates on the map. Click one:</p>
         <div class="ex" id="exBtns"></div>
@@ -515,7 +557,7 @@ function renderQueryStep(){
   const s=steps[qStep];
   const extra = typeof s.extra==="function" ? s.extra() : s.extra;
   panel.innerHTML=`
-    <div class="eyebrow">Part 4 · The query assembly line</div>
+    <div class="eyebrow">Part 5 · The query assembly line</div>
     <h1>A query, step by step</h1>
     <div class="chips">${steps.map((st,i)=>`<span class="b ${i===qStep?'on':i<qStep?'done':''}">${i+1}</span>${i<steps.length-1?'<span class="a">›</span>':''}`).join("")}</div>
     <h2 style="color:#111;font-weight:800;font-size:19px;margin:.2em 0 .5em">${qStep+1}. ${s.title}</h2>
@@ -542,7 +584,7 @@ function renderQueryStep(){
 // keyboard
 addEventListener("keydown",e=>{
   const idx=SECTIONS.findIndex(s=>s.id===state.section);
-  if(e.key>="1"&&e.key<="5"){ go(SECTIONS[+e.key-1].id); }
+  if(e.key>="1"&&e.key<="6"){ go(SECTIONS[+e.key-1].id); }
   else if(state.section==="query"){
     if(e.key==="ArrowRight"){document.getElementById("qNext")?.click();}
     if(e.key==="ArrowLeft"){document.getElementById("qPrev")?.click();}
