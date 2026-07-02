@@ -47,5 +47,37 @@ Curious what's available? Ask Claude *"list my gbrain skills"* (it runs `gbrain 
 - Brain seems stale? Ask *"sync my brain now,"* or check the scheduled ingestion is running (`gbrain autopilot --status`).
 - Deeper diagnosis: *"run gbrain doctor and tell me what's wrong."*
 
+## The commands underneath (optional)
+You almost never need these — Claude and Hermes run them for you. But if you want to drive the brain yourself in a terminal, or just understand what the agent is doing on your behalf, here are the handful that cover ~90% of real use. Run `gbrain <command> --help` for the rest.
+
+**Asking**
+| Command | What it does | When to reach for it |
+| --- | --- | --- |
+| `gbrain query "<question>"` | The main one. Hybrid search (meaning + keywords) that answers your question from your docs. Alias: `gbrain ask`. | Any real question — *"what's our refund window?"* Returns the answer with the sources it used. |
+| `gbrain search "<terms>"` | Plain keyword search — no interpretation, just matches the words. | You know the exact term or name and want to see which pages mention it. |
+
+**Feeding it**
+| Command | What it does | When to reach for it |
+| --- | --- | --- |
+| `gbrain sync` | Pulls new and changed files from your documents folder into the brain, incrementally. | You just added or edited docs and want them searchable now instead of waiting for the scheduled run. |
+| `gbrain import <dir>` | Bulk-loads a whole folder of markdown in one pass. | First-time load, or dropping in a big batch of documents at once. |
+| `gbrain put <slug>` / `gbrain get <slug>` | Write or read a single page directly. | You want to add or check one note without touching the file system. |
+| `gbrain embed --stale` | Recomputes the "meaning fingerprints" for anything that changed. | After a large edit, if search feels like it's missing recent changes. |
+
+**Keeping it healthy**
+| Command | What it does | When to reach for it |
+| --- | --- | --- |
+| `gbrain doctor --fast` | Quick health check — resolver, embeddings, database, connections. | Answers look off or stale, or something feels broken. First thing to run. |
+| `gbrain stats` | How much is in your brain — pages, links, tags. | A quick "how big is my brain now" sanity check. |
+| `gbrain list -n 20` | Lists your most recent pages. Add `--type` or `--tag` to filter. | You want to see what's actually in there. |
+| `gbrain autopilot` | Runs the self-maintaining daemon that keeps the brain synced and tidy in the background. | Set-and-forget upkeep (usually installed for you during setup). |
+
+**Tuning**
+| Command | What it does | When to reach for it |
+| --- | --- | --- |
+| `gbrain config set search.mode balanced` | Switches the depth dial (`conservative` → `balanced` → `tokenmax`). | You want wider, deeper answers for a big research question — see *Depth vs cost* above. |
+
+> Rule of thumb: if you can say it to Claude in plain language, do that. Drop to these commands only when you want to run something yourself, script it, or see exactly what the brain is doing.
+
 ## The payoff
 Two tools — Claude for building, Hermes for operating — both answering from one private, always-current memory of your business. The more you feed it, the sharper it gets. That's the compounding.
